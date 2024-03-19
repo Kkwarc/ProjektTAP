@@ -1,10 +1,7 @@
 clear all;
-syms x_1 x_2 u_1 u_2 u_3 u_4 u_5 u_6 y_1 y_2;
+syms alpha C;
+syms x_1 x_2 u_1 u_2 u_3 u_4 u_5 u_6
 syms x_1pp x_2pp;
-
-%% Równania stanu
-
-
 
 %% Funkcje nieliniowe
 
@@ -30,4 +27,19 @@ f_3L = subs(f_3, x_1, x_1pp) + subs(df_3dx_1, x_1, x_1pp) * (x_1 - x_1pp);
 f_4L = subs(f_4, [x_1, x_2], [x_1pp, x_2pp]) + subs(df_4dx_1, [x_1, x_2],[ x_1pp, x_2pp]) * (x_1 - x_1pp) + subs(df_4dx_2, [x_1, x_2], [x_1pp, x_2pp]) * (x_2 - x_2pp);
 
 
+%% Równania stanu zlinearyzowane
 
+dx_1 = u_1 + u_2 + u_3 - alpha/nthroot(C, 6) * f_1L;
+dx_2 = u_4 + u_5 + u_6 - alpha/nthroot(C, 6) * f_2L;
+y_1 = 1 / nthroot(C, 3) * f_3L;
+y_2 = f_4L;
+
+%% Podstawienie punktu pracy i stałych
+run("stale.m");
+x_1pp = C * h_pp^3;
+x_2pp = x_1pp * T_pp;
+
+dx_1_subbed = subs(dx_1);
+dx_2_subbed = subs(dx_2);
+y_1_subbed = subs(y_1);
+y_2_subbed = subs(y_2);

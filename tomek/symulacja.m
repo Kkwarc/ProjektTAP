@@ -2,7 +2,7 @@ clear all;
 
 run("stale.m");
 
-simulation_time = 200; % Czas symulacji (sekundy)
+simulation_time = 2500; % Czas symulacji (sekundy)
 time_step = 0.1; % Krok symulacji (sekundy)
 
 tau_steps = tau / time_step;
@@ -17,6 +17,11 @@ T_D(1:k_max) = T_Dpp;
 F_H(1:k_max) = F_Hpp;
 F_Cin(1:k_max) = F_Cpp;
 F_D(1:k_max) = F_Dpp;
+
+F_H(500/time_step:k_max) = F_Hpp * 1.1;
+F_H(1000/time_step:k_max) = F_Hpp * 0.9;
+F_Cin(1500/time_step:k_max) = F_Cpp * 1.1;
+F_Cin(2000/time_step:k_max) = F_Cpp * 0.9;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 F(1:k_min) = alpha * sqrt(h_pp);
