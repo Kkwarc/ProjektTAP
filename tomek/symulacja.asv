@@ -3,7 +3,7 @@ clear all;
 run("stale.m");
 
 simulation_time = 2000; % Czas symulacji (sekundy)
-time_step = 1; % Krok symulacji (sekundy)
+time_step = 0.; % Krok symulacji (sekundy)
 
 tau_steps = tau / time_step;
 tau_C_steps = tau_C / time_step;
@@ -19,32 +19,32 @@ F_D(1:k_max) = F_Dpp;
 
 F_C(1:k_min) = F_Cpp;
 F(1:k_min) = alpha * sqrt(h_pp);
-V(1:k_min) = C * h_pp^3;
 h(1:k_min) = h_pp;
+V(1:k_min) = C * h_pp^3;
 T(1:k_min) = T_pp;
+VT(1:k_min) = V(1) * T(1);
 T_out(1:k_min) = T_pp;
 
 for k = k_min:k_max
+    dVdt = F_H(k-1) + F_C(k-1) + F_D(k-1) - F(k-1);
+    dVTdt = F_H(k-1) * T_H(k-1) + F_C(k-1) * T_C(k-1) + F_D(k-1) * T_D(k-1) - F(k-1) * T(k-1);
+
+    V(k) = V(k-1) + time_step * dVdt;
+    VT(k) = VT(k-1) + time_step * dVTdt;
+    T(k) = VT(k) / V(k);
+
     F(k) = alpha * sqrt(h(k-1));
-    F_C(k) = F_Cin(k - tau_C_steps);
-
-    dVdt(k) = F_H(k-1) + F_C(k-1) + F_D(k-1) - F(k-1);
-    dVTdt(k) = (F_H(k-1) * T_H(k-1) + F_C(k-1) * T_C(k-1) + F_D(k-1) * T_D(k-1) - F(k-1) * T(k-1)) / dVdt(k-1);
-
-    V(k) = V(k-1) + time_step * dVdt(k);
-    VT(k) = VT(k-1) + time_step * dVTdt(k);
-    
     h(k) = nthroot(V(k) / C, 3); 
     T_out(k) = T(k - tau_steps);
+    F_C(k) = F_Cin(k - tau_C_steps);
 end
 
 figure(1);
 plot(T(k_min:k_max));
-T(k_min:k_max)
-% hold on
-% plot(h(k_min:k_max));
-% hold off
-% legend(["T", "h"]);
+hold on
+plot(h(k_min:k_max));
+hold off
+legend(["T", "h"]);
 
 
 
