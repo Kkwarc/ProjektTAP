@@ -31,6 +31,7 @@ h(1:k_min) = h_pp;
 T(1:k_min) = T_pp;
 T_out(1:k_min) = T_pp;
 
+% Wczytanie macierzy A, B, C, D
 run("wspolczynniki_rownania_stanu.m");
 
 % Symulacja (na podstawie równań stanu)
