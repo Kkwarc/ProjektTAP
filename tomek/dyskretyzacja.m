@@ -86,3 +86,5 @@ den = den{1, 1};
 disp(latex(vpa(num(1)/den(1),4)))
 disp("\end{aligned}\]")
 % Heavy wizardry end.
+
+save transmitancja_dyskretna tf_model
