@@ -46,6 +46,8 @@ for k = k_min:k_max
     u_6 = F_D(k) * T_D(k);
     u = [u_1, u_2, u_3, u_4, u_5, u_6, 1]';
     
+    % Jeśli zajdzie taka potrzeba można będzie w przyszłości zrezygnować z
+    % notacji macierzowej i wypisać całe równania na skalarach z palucha.
     x_kp1 = A*x + B*u;
     y = C*x + D*u;
     x = x_kp1;
