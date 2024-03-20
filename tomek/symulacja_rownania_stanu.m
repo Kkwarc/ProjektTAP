@@ -54,12 +54,13 @@ for k = k_min:k_max
     T_out(k) = T(k-tau_steps);
 end
 
-figure(2);
-plot(T_out(k_min:k_max));
-hold on
-plot(h(k_min:k_max));
-hold off
-legend(["T_{out}", "h"]);
+% figure(2);
+% time = (k_min-1:k_max-1) * time_step;
+% plot(time, T_out(k_min:k_max));
+% hold on
+% plot(time, h(k_min:k_max));
+% hold off
+% legend(["T_{out}", "h"]);
 
 
 

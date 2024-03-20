@@ -47,12 +47,10 @@ for k = k_min:k_max
     F_C(k) = F_Cin(k - tau_C_steps);
 end
 
-figure(1);
-plot(T_out(k_min:k_max));
-hold on
-plot(h(k_min:k_max));
-hold off
-legend(["T_{out}", "h"]);
-
-
-
+% figure(1);
+% time = (k_min-1:k_max-1) * time_step;
+% plot(time, T_out(k_min:k_max));
+% hold on
+% plot(time, h(k_min:k_max));
+% hold off
+% legend(["T_{out}", "h"]);
