@@ -39,7 +39,7 @@ save wspolczynniki_dyskretnego_rownania_stanu A B C D T_p
 tf_model = tf(ss_model_dyskretny);
 syms z;
 
-% Heavy wizardry begins here
+% Heav
 disp("\[\begin{aligned}")
 disp("G_{a}(s) &=")
 num = tf_model.Numerator(1, 1);
@@ -85,4 +85,3 @@ den = tf_model.Denominator(2, 7);
 den = den{1, 1};
 disp(latex(vpa(num(1)/den(1),4)))
 disp("\end{aligned}\]")
-% Heavy wizardry end.
