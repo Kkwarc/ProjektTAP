@@ -33,24 +33,30 @@ VT(1:k_min) = V(1) * T(1);
 T_out(1:k_min) = T_pp;
 
 % Symulacja (na podstawie modelu nieliniowego - równań różniczkowych)
+% Metoda RK2
 for k = k_min:k_max
-    dVdt = F_H(k-1) + F_C(k-1) + F_D(k-1) - F(k-1);
-    dVTdt = F_H(k-1) * T_H(k-1) + F_C(k-1) * T_C(k-1) + F_D(k-1) * T_D(k-1) - F(k-1) * T(k-1);
-
-    V(k) = V(k-1) + T_p * dVdt;
-    VT(k) = VT(k-1) + T_p * dVTdt;
-    T(k) = VT(k) / V(k);
-
-    F(k) = alpha * sqrt(h(k-1));
-    h(k) = nthroot(V(k) / C, 3); 
-    T_out(k) = T(k - tau_steps);
     F_C(k) = F_Cin(k - tau_C_steps);
+    dVdt_1 = F_H(k-1) + F_C(k-1) + F_D(k-1) - F(k-1);
+    dVTdt_1 = F_H(k-1) * T_H(k-1) + F_C(k-1) * T_C(k-1) + F_D(k-1) * T_D(k-1) - F(k-1) * T(k-1);
+    V_temp = V(k-1) + 0.5 * T_p * dVdt_1;
+    VT_temp = VT(k-1) + 0.5 * T_p * dVTdt_1;
+    T_temp = VT_temp / V_temp;
+    h_temp = nthroot(V_temp / C, 3);
+    F_temp = alpha * sqrt(h_temp);
+    dVdt_2 = F_H(k-1) + F_C(k-1) + F_D(k-1) - F_temp;
+    dVTdt_2 = F_H(k-1) * T_H(k-1) + F_C(k-1) * T_C(k-1) + F_D(k-1) * T_D(k-1) - F_temp * T_temp;
+    V(k) = V(k-1) + T_p * dVdt_2;
+    VT(k) = VT(k-1) + T_p * dVTdt_2;
+    T(k) = VT(k) / V(k);
+    F(k) = alpha * sqrt(h(k-1));
+    h(k) = nthroot(V(k-1) / C, 3); 
+    T_out(k) = T(k - tau_steps);
 end
 
-% figure(1);
-% time = (k_min-1:k_max-1) * T_p;
-% plot(time, T_out(k_min:k_max));
-% hold on
-% plot(time, h(k_min:k_max));
-% hold off
-% legend(["T_{out}", "h"]);
+figure(1);
+time = (k_min-1:k_max-1) * T_p;
+plot(time, T_out(k_min:k_max));
+hold on
+plot(time, h(k_min:k_max));
+hold off
+legend(["T_{out}", "h"]);

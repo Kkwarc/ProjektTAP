@@ -35,6 +35,7 @@ T_out(1:k_min) = T_pp;
 run("wspolczynniki_rownania_stanu.m");
 
 % Symulacja (na podstawie równań stanu)
+% Metoda RK2
 for k = k_min:k_max
     F_C = F_Cin(k-tau_C_steps);
     u_1 = F_H(k);
@@ -45,22 +46,25 @@ for k = k_min:k_max
     u_6 = F_D(k) * T_D(k);
     u = [u_1, u_2, u_3, u_4, u_5, u_6, 1]';
 
-    dx = A*x + B*u;
+    k_1 = A*x + B*u;
+    x_temp = x + 0.5 * T_p * k_1;
+    k_2 = A*x_temp + B*u;
+    x = x + T_p * k_2;
     y = C*x + D*u;
-    x = x + T_p * dx;
 
     h(k) = y(1);
     T(k) = y(2);
     T_out(k) = T(k-tau_steps);
 end
 
-% figure(2);
-% time = (k_min-1:k_max-1) * T_p;
-% plot(time, T_out(k_min:k_max));
-% hold on
-% plot(time, h(k_min:k_max));
-% hold off
-% legend(["T_{out}", "h"]);
+figure(7);
+hold on;
+time = (k_min-1:k_max-1) * T_p;
+plot(time, T_out(k_min:k_max));
+hold on
+plot(time, h(k_min:k_max));
+hold off
+legend(["T_{out}", "h"]);
 
 
 
