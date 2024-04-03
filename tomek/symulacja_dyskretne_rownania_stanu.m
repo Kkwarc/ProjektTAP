@@ -57,13 +57,13 @@ for k = k_min:k_max
     T_out(k) = T(k-tau_steps);
 end
 
-% figure(3);
-% time = (k_min-1:k_max-1) * T_p;
-% stairs(time, T_out(k_min:k_max));
-% hold on
-% stairs(time, h(k_min:k_max));
-% hold off
-% legend(["T_{out}", "h"]);
-% 
+figure(3);
+time = (k_min-1:k_max-1) * T_p;
+stairs(time, T_out(k_min:k_max));
+hold on
+stairs(time, h(k_min:k_max));
+hold off
+legend(["T_{out}", "h"]);
+
 
 
