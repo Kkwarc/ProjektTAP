@@ -1,6 +1,6 @@
 clear all;
 
-vector = [ -10.0000,    0.0000,    0.0000,    0.9886,    1.3974,    1.3974];
+vector = [-10.0000,    0.0045,    0.0012,    0.9951,    1.1846,    1.1846];
 
 Kp_1=vector(1); % człon proporcjonalny
 Ki_1=vector(2); % człon całkujący
@@ -28,10 +28,12 @@ F_Cin(1:k_max) = F_Cpp;
 F_D(1:k_max) = F_Dpp;
 
 T_zad(1:k_max) = 36.83;
-T_zad(round(k_max/2):k_max) = 30.83 - 2;
+T_zad(round(k_max/3):k_max) = 36.83 - 2;
+T_zad(round(2*k_max/3):k_max) = 36.83 + 2;
 
 h_zad(1:k_max) = 12.96;
-h_zad(round(k_max/2):k_max) = 12.96 + 3;
+h_zad(round(k_max/3):k_max) = 12.96 + 1;
+h_zad(round(2*k_max/3):k_max) = 12.96 - 1;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 x_1 = C * h_pp^3;
@@ -71,9 +73,15 @@ for k = k_min:k_max
 
     e1(k) = T_zad(k) - T_out(k-1);
     F_Cin(k) = F_Cin(k-1) + r0_y1*e1(k) - r1_y1*e1(k-1) + r2_y1*e1(k-2);
+    if F_Cin(k) < 0
+        F_Cin(k) = 0;
+    end
 
     e2(k) = h_zad(k) - h(k-1);
     F_H(k) = F_H(k-1) + r0_y2*e2(k) - r1_y2*e2(k-1) + r2_y2*e2(k-2);
+    if F_H(k) < 0
+        F_H(k) = 0;
+    end
 
     e = e + abs(e1(k)) + abs(e2(k));
     

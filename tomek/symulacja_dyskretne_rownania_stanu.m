@@ -53,10 +53,10 @@ end
 
 figure(3);
 time = (k_min-1:k_max-1) * T_p;
-% stairs(time, T_out(k_min:k_max));
+stairs(time, T_out(k_min:k_max));
 hold on
 stairs(time, h(k_min:k_max));
-% hold off
-% legend(["T_{out}", "h"]);
+hold off
+legend(["T_{out}", "h"]);
 
 
