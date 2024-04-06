@@ -1,20 +1,18 @@
-function [h, T_out, T] = obiekt(F_Cin, F_H, F_D, T_H, T_C, T_D, tau_C_steps, tau_steps, x, A, B, C, D, h, T, T_out, k, T_p)
-F_C = F_Cin(k-tau_C_steps);
-u_1 = F_H(k);
-u_2 = F_C;
-u_3 = F_D(k);
-u_4 = F_H(k) * T_H(k);
-u_5 = F_C * T_C(k);
-u_6 = F_D(k) * T_D(k);
-u = [u_1, u_2, u_3, u_4, u_5, u_6, 1]';
-
-k_1 = A*x + B*u;
-x_temp = x + 0.5 * T_p * k_1;
-k_2 = A*x_temp + B*u;
-x = x + T_p * k_2;
-y = C*x + D*u;
-
-h(k) = y(1);
-T(k) = y(2);
-T_out(k) = T(k-tau_steps);
+function [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k)
+    F_C(k) = F_Cin(k - tau_C_steps);
+    dVdt_1 = F_H(k-1) + F_C(k-1) + F_D(k-1) - F(k-1);
+    dVTdt_1 = F_H(k-1) * T_H(k-1) + F_C(k-1) * T_C(k-1) + F_D(k-1) * T_D(k-1) - F(k-1) * T(k-1);
+    V_temp = V(k-1) + 0.5 * T_p * dVdt_1;
+    VT_temp = VT(k-1) + 0.5 * T_p * dVTdt_1;
+    T_temp = VT_temp / V_temp;
+    h_temp = nthroot(V_temp / C, 3);
+    F_temp = alpha * sqrt(h_temp);
+    dVdt_2 = F_H(k-1) + F_C(k-1) + F_D(k-1) - F_temp;
+    dVTdt_2 = F_H(k-1) * T_H(k-1) + F_C(k-1) * T_C(k-1) + F_D(k-1) * T_D(k-1) - F_temp * T_temp;
+    V(k) = V(k-1) + T_p * dVdt_2;
+    VT(k) = VT(k-1) + T_p * dVTdt_2;
+    T(k) = VT(k) / V(k);
+    F(k) = alpha * sqrt(h(k-1));
+    h(k) = nthroot(V(k-1) / C, 3); 
+    T_out(k) = T(k - tau_steps);
 end
