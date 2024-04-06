@@ -1,5 +1,4 @@
 function e = PID(vector)
-% clear all;
 Kp_1=vector(1); % człon proporcjonalny
 Ki_1=vector(2); % człon całkujący
 Kd_1=vector(3);
@@ -7,7 +6,23 @@ Kp_2=vector(4); % człon proporcjonalny
 Ki_2=vector(5); % człon całkujący
 Kd_2=vector(6);
 
-run("stale.m");
+% Stałe
+C = 0.6;
+alpha = 15;
+tau_C = 90;
+tau = 40;
+
+% Punkt pracy - wejścia procesu
+T_Cpp = 19;
+T_Hpp = 73;
+T_Dpp = 24;
+F_Cpp = 28;
+F_Hpp = 17;
+F_Dpp = 9;
+
+% Punkt pracy - wyjścia procesu
+h_pp = 12.96;
+T_pp = 36.83;
 
 simulation_time = 2500; % Czas symulacji (sekundy)
 T_p = 0.1; % Krok symulacji (sekundy)
@@ -34,38 +49,25 @@ h_zad(round(k_max/3):k_max) = 12.96 + 1;
 h_zad(round(2*k_max/3):k_max) = 12.96 - 1;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
-x_1 = C * h_pp^3;
-x_2 = C * h_pp^3 * T_pp;
-x = [x_1, x_2]';
+F(1:k_min) = alpha * sqrt(h_pp);
+F_C(1:k_min) = F_Cpp;
 h(1:k_min) = h_pp;
+V(1:k_min) = C * h_pp^3;
 T(1:k_min) = T_pp;
+VT(1:k_min) = V(1) * T(1);
 T_out(1:k_min) = T_pp;
-
-% Wczytanie macierzy A, B, C, D
-run("wspolczynniki_rownania_stanu.m");
-
-% Symulacja (na podstawie równań stanu)
-% Metoda RK2
 
 e1(1:k_max) = 0;
 e2(1:k_max) = 0;
 e = 0;
 
-% Kp_1 = 5;
-% Ki_1 = 0.1;
-% Kd_1 = 0.001;
-
 r0_y1 = Kp_1+Ki_1*T_p+Kd_1/T_p;
 r1_y1 = Kp_1+2*Kd_1/T_p;
 r2_y1 = Kd_1/T_p;
 
-% Kp_2 = 5;
-% Ki_2 = 0.1;
-% Kd_2 = 0.001;
-
-r0_y2 = Kp_1+Ki_1*T_p+Kd_1/T_p;
-r1_y2 = Kp_1+2*Kd_1/T_p;
-r2_y2 = Kd_1/T_p;
+r0_y2 = Kp_2+Ki_2*T_p+Kd_2/T_p;
+r1_y2 = Kp_2+2*Kd_2/T_p;
+r2_y2 = Kd_2/T_p;
 
 for k = k_min:k_max
 
@@ -83,17 +85,10 @@ for k = k_min:k_max
 
     e = e + abs(e1(k)) + abs(e2(k));
     
-    [h, T_out, T] = obiekt(F_Cin, F_H, F_D, T_H, T_C, T_D, tau_C_steps, tau_steps, x, A, B, C, D, h, T, T_out, k, T_p);
+    [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
 end
 
 disp(e)
+disp(vector)
 
 end
-% figure(7);
-% hold on;
-% plot(T_out(k_min:k_max));
-% plot(T_zad(k_min:k_max))
-% plot(F_Cin(k_min:k_max))
-% plot(h(k_min:k_max))
-% hold off
-% legend(["T_{out}", "Tzad", "Fcin", "h"]);

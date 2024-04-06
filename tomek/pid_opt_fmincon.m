@@ -1,9 +1,13 @@
+clear all;
+close all;
+clc;
+
 %Ograniczenia dolne parametrów
-lb = [-10, 0.00000001, 0.0000001, -10, 0.0000001, 0.0000001];
+lb = [-2, -2, 0, -2, -2, 0];
 % %Ograniczenia górne parametrów
-ub = [10, 10, 10, 10, 10, 10];
+ub = [2, 2, 2, 2, 2, 2];
 %nastawy startowe
-nastawy_startowe_PID = [1, 1, 1, 1, 1, 1];
+nastawy_startowe_PID = [-1, 0, 0, 1, 0, 0];
 
 disp(length(nastawy_startowe_PID))
 optymalne_nastawy_PID = fmincon(@PID,nastawy_startowe_PID, [], [], [], [], lb, ub);
