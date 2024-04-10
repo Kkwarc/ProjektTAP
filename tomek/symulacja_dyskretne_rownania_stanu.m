@@ -59,4 +59,3 @@ stairs(time, h(k_min:k_max));
 hold off
 legend(["T_{out}", "h"]);
 
-
