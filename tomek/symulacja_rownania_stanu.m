@@ -11,12 +11,9 @@ k_min = max(tau_steps, tau_C_steps) + 1;
 k_max = simulation_time / T_p + k_min;
 
 % Trajektorie wejść procesu
-T_H(1:k_max) = T_Hpp;
-T_C(1:k_max) = T_Cpp;
 T_D(1:k_max) = T_Dpp;
 F_H(1:k_max) = F_Hpp;
 F_Cin(1:k_max) = F_Cpp;
-F_D(1:k_max) = F_Dpp;
 
 F_H(500/T_p:k_max) = F_Hpp * 1.1;
 F_H(1000/T_p:k_max) = F_Hpp * 0.9;
@@ -40,11 +37,8 @@ for k = k_min:k_max
     F_C = F_Cin(k-tau_C_steps);
     u_1 = F_H(k);
     u_2 = F_C;
-    u_3 = F_D(k);
-    u_4 = F_H(k) * T_H(k);
-    u_5 = F_C * T_C(k);
-    u_6 = F_D(k) * T_D(k);
-    u = [u_1, u_2, u_3, u_4, u_5, u_6, 1]';
+    u_3 = T_D(k);
+    u = [u_1, u_2, u_3, 1]';
 
     k_1 = A*x + B*u;
     x_temp = x + 0.5 * T_p * k_1;
