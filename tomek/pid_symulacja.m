@@ -81,8 +81,8 @@ for k = k_min:k_max
     % [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
 
     %% z odsprzęganiem
-    u1(k) = F_Cin(k) + F_H(k);
-    u2(k) = F_H(k) - F_Cin(k);
+    u1(k) = F_Cin(k) - F_H(k-90);
+    u2(k) = F_H(k) + 2.028 * F_Cin(k-90);
 
     if u1(k) < 0
         u1(k) = 0;
