@@ -2,8 +2,8 @@ clear all;
 close all;
 % clc;
 
-vector = [-1.25, -0.005, -0.04, 1.25, 0.005, 0.004];
-% vector = [-1, 1, 1, 1, 1, 1];
+% vector = [-1.25, -0.005, -0.04, 1.25, 0.005, 0.004];
+vector = [-1, 1, 1, 1, 1, 1];
 
 Kp_1=vector(1); % człon proporcjonalny
 Ki_1=vector(2); % człon całkujący
