@@ -1,4 +1,4 @@
-function Sz=WBerryCtimetfz2Sz(Tp,timefinal)
+function Sz=DMCstepmatricesZ(Tp,timefinal)
 % konstrukcja macierzowej odpowiedzi skokowej zakłóceniowej dla DMC,
 % zakładając timefinal= Tp*Dz, Dz -- liczba elementów odp. skokowej
 %
