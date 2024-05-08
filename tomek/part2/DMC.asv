@@ -7,7 +7,7 @@ E=0;
 % s_load = StepRespons(73, 18.9225, 15.6402, 0); % poj. odp. skokowa
 
 
-D = 4;
+D = 500;
 % s11 = s_load(1:1:D);
 % s12 = s_load(1:1:D);
 % s21 = s_load(1:1:D);
@@ -28,10 +28,11 @@ s42 = [29, 30, 31, 32];
 
 S = [s11; s12; s21; s22; s31; s32; s41; s42];
 
-SS = zeros(ny,nu,nt-1);
-
 ilosc_wejsc = 4;
 ilosc_wyjsc = 2;
+
+
+
 
 
 start= D+1;
@@ -84,18 +85,14 @@ for column=1:N_u
     end
 end
 
-[MM, MP] = DMCmatrices(S, N, N_u);
 % K = (M'*M+lambda*eye(N_u, N_u))^(-1)*M';
-% ny = ilosc_wyjsc;
-% nu = ilosc_wejsc;
-% M_p = zeros(N*ny, (D-1)*nu);
-% for i=1:D-1
-%     for j=1:N
-%         M_p((j-1)*ny+1:j*ny, (i-1)*nu+1:i*nu) = S(:, :, min(i+j, D)-S(:, :, i));
-%     end
-% end
 
-
+M_p = zeros(N*ilosc_wyjsc, (D-1)*ilosc_wejsc);
+for i=1:D-1
+    for j=1:N
+        M_p((j-1)*ny+1:(i-1))
+    end
+end
 % for column=1:D-1
 %     for row=1:N
 %         for wejscie=1:ilosc_wejsc
