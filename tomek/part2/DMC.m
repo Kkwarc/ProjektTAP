@@ -11,7 +11,7 @@ simulation_time = 10000; % Czas symulacji (sekundy)
 poczatek = start; %chwila k w której zmienia sie wartość zadana
 N = 120;
 Nu = 20;
-lambda = 10;
+lambda = 1;
 
 % Stałe
 C = 0.6;
@@ -46,13 +46,13 @@ F_D(1:simulation_time) = F_Dpp;
 
 T_zad(1:simulation_time) = 36.83;
 T_zad(start:start+round((simulation_time-start)/3)) = 36.83;
-T_zad(round(start+(simulation_time-start)/3):round(2*(simulation_time-start)/3)) = 36.83 - 2;
-T_zad(round(2*(simulation_time-start)/3):simulation_time) = 36.83 + 2;
+T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 36.83 - 2;
+T_zad(start+round(2*(simulation_time-start)/3):simulation_time) = 36.83 + 2;
 
 h_zad(1:simulation_time) = 12.96;
 h_zad(start:start+round((simulation_time-start)/3)) = 12.96;
-h_zad(round(start+(simulation_time-start)/3):round(2*(simulation_time-start)/3)) = 12.96 + 1;
-h_zad(round(2*(simulation_time-start)/3):simulation_time) = 12.96 - 1;
+h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 12.96 + 1;
+h_zad(start+round(2*(simulation_time-start)/3):simulation_time) = 12.96 - 1;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 F(1:simulation_time) = alpha * sqrt(h_pp);
@@ -115,28 +115,28 @@ for k=start:simulation_time
 
     F_Cin(k) = DU(1);
 
-    if F_Cin(k) > F_Cpp*120/100
-        F_Cin(k) = F_Cpp*120/100;
-    elseif F_Cin(k) < F_Cpp*80/100
-        F_Cin(k) = F_Cpp*80/100;
+    if F_Cin(k) > F_Cpp*1.1
+        F_Cin(k) = F_Cpp*1.1;
+    elseif F_Cin(k) < F_Cpp*0.9
+        F_Cin(k) = F_Cpp*0.9;
     end
 
     F_H(k) = DU(3);
 
-    if F_H(k) > F_Hpp*120/100
-        F_H(k) = F_Hpp*120/100;
-    elseif F_H(k) < F_Hpp*120/100
-        F_H(k) = F_Hpp*120/100;
+    if F_H(k) > F_Hpp*1.1
+        F_H(k) = F_Hpp*1.1;
+    elseif F_H(k) < F_Hpp*0.9
+        F_H(k) = F_Hpp*0.9;
     end
     e = e + (T_zad(k)-T_out(k))^2 + (h_zad(k)-h(k))^2; 
 end
 
 subplot(2,1,1)
 hold on
-stairs(h(start:end))
-plot(h_zad(start:end))
-stairs(T_out(start:end))
-plot(T_zad(start:end))
+stairs(h(1:end))
+plot(h_zad(1:end))
+stairs(T_out(1:end))
+plot(T_zad(1:end))
 title("Wyjście")
 legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana")
 xlabel("chwila k")
@@ -145,8 +145,8 @@ hold off
 
 subplot(2,1,2)
 hold on
-stairs(F_Cin(start:end))
-stairs(F_H(start:end))
+stairs(F_Cin(1:end))
+stairs(F_H(1:end))
 legend("sterowanie Fcin", "sterowanie Fh")
 xlabel("chwila k")
 ylabel("wartość sterowania")

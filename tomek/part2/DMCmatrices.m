@@ -16,14 +16,8 @@ function [M, MP] = DMCmatrices(S, N, Nu)
     % end
     for i = 1:D-1
         for j = 1:N
-            index = min(i+j, D);  % Calculate index here
-            % Ensure index is in the valid range
-            if index < 1
-                index = 1;
-            elseif index > D
-                index = D;
-            end
-            MP((j-1)*ny+1:j*ny, (i-1)*nu+1:i*nu) = S(:, :, index);
+            index = max(1, min(i+j, D));  % Calculate index here
+            MP((j-1)*ny+1:j*ny, (i-1)*nu+1:i*nu) = S(:, :, index)-S(:, :, i);
         end
     end
 end
