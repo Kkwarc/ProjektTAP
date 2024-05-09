@@ -92,12 +92,6 @@ for k=start:simulation_time
     disp(k)
     %symulacja obiektu
     [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, Tp, k);
-    
-    if T_out(k) > 100
-        T_out(k) = 100;
-    elseif T_out(k) < 5
-        T_out(k) = 5;
-    end
 
     %Obliczenie DU_p
     for d=1:(D-1)
@@ -119,18 +113,18 @@ for k=start:simulation_time
 
     F_Cin(k) = DU(1);
 
-    if F_Cin > 100
-        F_Cin = 1;
-    elseif F_Cin < 0
-        F_Cin = 0;
+    if F_Cin(k) > F_Cpp*120/100
+        F_Cin(k) = F_Cpp*120/100;
+    elseif F_Cin(k) < F_Cpp*80/100
+        F_Cin(k) = F_Cpp*80/100;
     end
 
     F_H(k) = DU(3);
 
-    if F_H > 100
-        F_H = 1;
-    elseif F_H < 0
-        F_H = 0;
+    if F_H(k) > F_Hpp*120/100
+        F_H(k) = F_Hpp*120/100;
+    elseif F_H(k) < F_Hpp*120/100
+        F_H(k) = F_Hpp*120/100;
     end
     e = e + (T_zad(k)-T_out(k))^2 + (h_zad(k)-h(k))^2; 
 end
