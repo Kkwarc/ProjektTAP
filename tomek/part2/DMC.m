@@ -33,33 +33,35 @@ T_pp = 36.83;
 
 tau_steps = tau / Tp;
 tau_C_steps = tau_C / Tp;
-k_min = max(tau_steps, tau_C_steps) + 1;
-k_max = simulation_time / Tp + k_min;
+% k_min = max(tau_steps, tau_C_steps) + 1;
+% k_max = simulation_time / Tp + k_min;
 
 % Trajektorie wejść procesu
-T_H(1:k_max) = T_Hpp;
-T_C(1:k_max) = T_Cpp;
-T_D(1:k_max) = T_Dpp;
-F_H(1:k_max) = F_Hpp;
-F_Cin(1:k_max) = F_Cpp;
-F_D(1:k_max) = F_Dpp;
+T_H(1:simulation_time) = T_Hpp;
+T_C(1:simulation_time) = T_Cpp;
+T_D(1:simulation_time) = T_Dpp;
+F_H(1:simulation_time) = F_Hpp;
+F_Cin(1:simulation_time) = F_Cpp;
+F_D(1:simulation_time) = F_Dpp;
 
-T_zad(1:k_max) = 36.83;
-T_zad(round(k_max/3):k_max) = 36.83 - 2;
-T_zad(round(2*k_max/3):k_max) = 36.83 + 2;
+T_zad(1:simulation_time) = 36.83;
+T_zad(start:start+round((simulation_time-start)/3)) = 36.83;
+T_zad(round(start+(simulation_time-start)/3):round(2*(simulation_time-start)/3)) = 36.83 - 2;
+T_zad(round(2*(simulation_time-start)/3):simulation_time) = 36.83 + 2;
 
-h_zad(1:k_max) = 12.96;
-h_zad(round(k_max/3):k_max) = 12.96 + 1;
-h_zad(round(2*k_max/3):k_max) = 12.96 - 1;
+h_zad(1:simulation_time) = 12.96;
+h_zad(start:start+round((simulation_time-start)/3)) = 12.96;
+h_zad(round(start+(simulation_time-start)/3):round(2*(simulation_time-start)/3)) = 12.96 + 1;
+h_zad(round(2*(simulation_time-start)/3):simulation_time) = 12.96 - 1;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
-F(1:k_max) = alpha * sqrt(h_pp);
-F_C(1:k_max) = F_Cpp;
-h(1:k_max) = h_pp;
-V(1:k_max) = C * h_pp^3;
-T(1:k_max) = T_pp;
-VT(1:k_max) = V(1) * T(1);
-T_out(1:k_max) = T_pp;
+F(1:simulation_time) = alpha * sqrt(h_pp);
+F_C(1:simulation_time) = F_Cpp;
+h(1:simulation_time) = h_pp;
+V(1:simulation_time) = C * h_pp^3;
+T(1:simulation_time) = T_pp;
+VT(1:simulation_time) = V(1) * T(1);
+T_out(1:simulation_time) = T_pp;
 
 e = 0;
 
