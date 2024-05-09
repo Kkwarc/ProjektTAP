@@ -9,10 +9,10 @@ D = 50;
 start = D+1;
 simulation_time = 10000; % Czas symulacji (sekundy)
 poczatek = start; %chwila k w której zmienia sie wartość zadana
-N = 35;
+N = 30;
 Nu = 20;
 lambda = [100, 10];
-phi = [1, 10];
+phi = [1, 1];
 
 % Stałe
 C = 0.6;
@@ -81,7 +81,7 @@ legend("s11", "s11", "s21", "s22")
 hold off
 
 lambda_mat = [lambda(1), 0; 0, lambda(2)];
-LAMBDA = kron(eye(Nu), lambda_mat);
+LAMBDA = kron(eye(N), lambda_mat);
 
 phi_mat = [phi(1), 0; 0, phi(2)];
 PHI = kron(eye(N), phi_mat);
@@ -90,7 +90,7 @@ PHI = kron(eye(N), phi_mat);
 % Sz = DMCstepmatricesZ(Tp, timefinal);
 % MzP = DMCmatrixMzP(Sz, N);
 
-K = (M'*PHI*M+LAMBDA)^(-1)*M'*PHI;
+K = (M'**M+L)^(-1)*M';
 
 DU_p = zeros((D-1)*nu, 1);
 for k=start:simulation_time
