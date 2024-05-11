@@ -3,8 +3,8 @@ close all;
 % clc;
 
 % vector = [-1.25, -0.005, -0.04, 1.25, 0.005, 0.004];
-vector = [-1, 1, 1, 1, 1, 1];
-
+vector = [-1.05, 200, 0.01, 1.05, 100, 0.01];
+%vector = [-1.05, 200, 0.01, 1.05, 100, 0.01];
 Kp_1=vector(1); % człon proporcjonalny
 Ki_1=vector(2); % człon całkujący
 Kd_1=vector(3);
@@ -14,8 +14,8 @@ Kd_2=vector(6);
 
 run("stale.m");
 
-simulation_time = 2500; % Czas symulacji (sekundy)
-T_p = 0.1; % Krok symulacji (sekundy)
+simulation_time = 10000; % Czas symulacji (sekundy)
+T_p = 1; % Krok symulacji (sekundy)
 
 tau_steps = tau / T_p;
 tau_C_steps = tau_C / T_p;
@@ -54,35 +54,36 @@ e1(1:k_max) = 0;
 e2(1:k_max) = 0;
 e = 0;
 
-r0_y1 = Kp_1+Ki_1*T_p+Kd_1/T_p;
-r1_y1 = Kp_1+2*Kd_1/T_p;
-r2_y1 = Kd_1/T_p;
+r0_y1 = Kp_1*(T_p/(2*Ki_1) + Kd_1/T_p + 1);
+r1_y1 = Kp_1*(T_p/(2*Ki_1) - 2*Kd_1/T_p - 1);
+r2_y1 = Kp_1*Kd_1/T_p;
 
-r0_y2 = Kp_2+Ki_2*T_p+Kd_2/T_p;
-r1_y2 = Kp_2+2*Kd_2/T_p;
-r2_y2 = Kd_2/T_p;
+r0_y2 = Kp_2*(T_p/(2*Ki_2) + Kd_2/T_p  + 1);
+r1_y2 = Kp_2*(T_p/(2*Ki_2) - 2*Kd_2/T_p - 1);
+r2_y2 = Kp_2*Kd_2/T_p;
 
 for k = k_min:k_max
+ %% bez odsprzęgania
+ %  [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
+ %%
     e1(k) = T_zad(k) - T_out(k-1);
-    F_Cin(k) = F_Cin(k-1) + r0_y1*e1(k) - r1_y1*e1(k-1) + r2_y1*e1(k-2);
+    F_Cin(k) = F_Cin(k-1) + r0_y1*e1(k) + r1_y1*e1(k-1) + r2_y1*e1(k-2);
     if F_Cin(k) < 0
         F_Cin(k) = 0;
     end
     
     e2(k) = h_zad(k) - h(k-1);
-    F_H(k) = F_H(k-1) + r0_y2*e2(k) - r1_y2*e2(k-1) + r2_y2*e2(k-2);
+    F_H(k) = F_H(k-1) + r0_y2*e2(k) + r1_y2*e2(k-1) + r2_y2*e2(k-2);
     if F_H(k) < 0
         F_H(k) = 0;
     end
 
-    e = e + abs(e1(k)) + abs(e2(k));
+    e = e + abs(e1(k))^2 + abs(e2(k))^2;
 
-    %% bez odsprzęgania
-    % [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
-
-    %% z odsprzęganiem
-    u1(k) = F_Cin(k) - F_H(k-90);
-    u2(k) = F_H(k) + 2.028 * F_Cin(k-90);
+   
+     %% z odsprzęganiem
+    u1(k) = F_Cin(k-1) - 0.2*(F_H(k-1) - F_Hpp);
+    u2(k) = F_H(k-1) - 0.3*(F_Cin(k-1) - F_Cpp);
 
     if u1(k) < 0
         u1(k) = 0;
@@ -102,7 +103,7 @@ plot(T_zad(k_min:k_max))
 plot(h(k_min:k_max))
 plot(h_zad(k_min:k_max))
 hold off
-legend(["T_{out}", "Tzad", "h", "hzad"])
+legend(["T_{out}", "Tzad", "h", "hzad"], Location="best")
 
 figure(2)
 hold on

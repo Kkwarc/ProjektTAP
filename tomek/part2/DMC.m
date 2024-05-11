@@ -4,14 +4,14 @@ clear all
 close all
 
 Tp = 10;% Krok symulacji (sekundy)
-D = 50;
+D = 100;
 
 start = D+1;
 simulation_time = 10000; % Czas symulacji (sekundy)
 poczatek = start; %chwila k w której zmienia sie wartość zadana
 N = 35;
 Nu = 20;
-lambda = [100, 10];
+lambda = [200, 20];
 phi = [1, 10];
 
 % Stałe
@@ -45,12 +45,12 @@ F_D(1:simulation_time) = F_Dpp;
 
 T_zad(1:simulation_time) = 36.83;
 T_zad(start:start+round((simulation_time-start)/3)) = 36.83;
-T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 36.83 - 2;
+T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 36.83 - 5;
 T_zad(start+round(2*(simulation_time-start)/3):simulation_time) = 36.83 + 2;
 
 h_zad(1:simulation_time) = 12.96;
 h_zad(start:start+round((simulation_time-start)/3)) = 12.96;
-h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 12.96 + 1;
+h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 12.96 + 4;
 h_zad(start+round(2*(simulation_time-start)/3):simulation_time) = 12.96 - 1;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
@@ -67,18 +67,18 @@ e = 0;
 S = DMCstepmatrices(Tp, Tp*D);
 [ny, nu, D] = size(S);
 
-figure(10)
-hold on
-plot(reshape(S(1, 1, :), 1, D))
-plot(reshape(S(1, 2, :), 1, D))
-plot(reshape(S(2, 1, :), 1, D))
-plot(reshape(S(2, 2, :), 1, D))
-% plot(reshape(S(3, 1, :), 1, D))
-% plot(reshape(S(3, 2, :), 1, D))
-% plot(reshape(S(4, 1, :), 1, D))
-% plot(reshape(S(4, 2, :), 1, D))
-legend("s11", "s11", "s21", "s22")
-hold off
+% figure(10)
+% hold on
+% plot(reshape(S(1, 1, :), 1, D))
+% plot(reshape(S(1, 2, :), 1, D))
+% plot(reshape(S(2, 1, :), 1, D))
+% plot(reshape(S(2, 2, :), 1, D))
+% % plot(reshape(S(3, 1, :), 1, D))
+% % plot(reshape(S(3, 2, :), 1, D))
+% % plot(reshape(S(4, 1, :), 1, D))
+% % plot(reshape(S(4, 2, :), 1, D))
+% legend("s11", "s11", "s21", "s22")
+% hold off
 
 lambda_mat = [lambda(1), 0; 0, lambda(2)];
 LAMBDA = kron(eye(Nu), lambda_mat);
@@ -94,7 +94,7 @@ K = (M'*PHI*M+LAMBDA)^(-1)*M'*PHI;
 
 DU_p = zeros((D-1)*nu, 1);
 for k=start:simulation_time
-    disp(k)
+%     disp(k)
     %symulacja obiektu
     [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, Tp, k);
 
@@ -118,18 +118,18 @@ for k=start:simulation_time
 
     F_Cin(k) = F_Cin(k-1) + DU(1);
 
-    if F_Cin(k) > F_Cpp*1.1
-        F_Cin(k) = F_Cpp*1.1;
-    elseif F_Cin(k) < F_Cpp*0.9
-        F_Cin(k) = F_Cpp*0.9;
+    if F_Cin(k) > F_Cpp*1.4
+        F_Cin(k) = F_Cpp*1.4;
+    elseif F_Cin(k) < F_Cpp*0.6
+        F_Cin(k) = F_Cpp*0.6;
     end
 
     F_H(k) = F_H(k-1) + DU(2);
     
-    if F_H(k) > F_Hpp*1.1
-        F_H(k) = F_Hpp*1.1;
-    elseif F_H(k) < F_Hpp*0.9
-        F_H(k) = F_Hpp*0.9;
+    if F_H(k) > F_Hpp*1.4
+        F_H(k) = F_Hpp*1.4;
+    elseif F_H(k) < F_Hpp*0.6
+        F_H(k) = F_Hpp*0.6;
     end
     e = e + (T_zad(k)-T_out(k))^2 + (h_zad(k)-h(k))^2; 
 end
