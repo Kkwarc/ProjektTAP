@@ -33,13 +33,21 @@ F_D(1:k_max) = F_Dpp;
 u1 = F_Cin;
 u2 = F_H;
 
-T_zad(1:k_max) = 36.83;
-T_zad(round(k_max/3):k_max) = 36.83 - 2;
-T_zad(round(2*k_max/3):k_max) = 36.83 + 2;
+% T_zad(1:k_max) = 36.83;
+% T_zad(round(k_max/3):k_max) = 36.83 - 2;
+% T_zad(round(2*k_max/3):k_max) = 36.83 + 2;
+% 
+% h_zad(1:k_max) = 12.96;
+% h_zad(round(k_max/3):k_max) = 12.96 + 1;
+% h_zad(round(2*k_max/3):k_max) = 12.96 - 1;
 
-h_zad(1:k_max) = 12.96;
-h_zad(round(k_max/3):k_max) = 12.96 + 1;
-h_zad(round(2*k_max/3):k_max) = 12.96 - 1;
+T_zad(1:k_max) = T_pp;
+T_zad(round(k_max/3):k_max) = T_pp - 5;
+T_zad(round(2*k_max/3):k_max) = T_pp + 2;
+
+h_zad(1:k_max) = h_pp;
+h_zad(round(k_max/3):k_max) = h_pp + 4;
+h_zad(round(2*k_max/3):k_max) = h_pp - 1;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 F(1:k_max) = alpha * sqrt(h_pp);
@@ -97,17 +105,24 @@ end
 disp(e)
 
 figure(1)
+subplot(2,1,1)
 hold on
-plot(T_out(k_min:k_max))
-plot(T_zad(k_min:k_max))
-plot(h(k_min:k_max))
-plot(h_zad(k_min:k_max))
+stairs(h(1:end))
+plot(h_zad(1:end))
+stairs(T_out(1:end))
+plot(T_zad(1:end))
+title("Wyjście")
+legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana")
+xlabel("chwila k")
+ylabel("wartość wyjścia")
 hold off
-legend(["T_{out}", "Tzad", "h", "hzad"], Location="best")
 
-figure(2)
+subplot(2,1,2)
 hold on
-plot(F_Cin(k_min:k_max))
-plot(F_H(k_min:k_max))
-hold off
-legend(["Fcin", "Fh"])
+stairs(F_Cin(1:end))
+stairs(F_H(1:end))
+legend("sterowanie Fcin", "sterowanie Fh")
+xlabel("chwila k")
+ylabel("wartość sterowania")
+title("Sterowanie")
+print("DMC_single.eps","-depsc","-r400")

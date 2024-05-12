@@ -43,15 +43,15 @@ F_H(1:simulation_time) = F_Hpp;
 F_Cin(1:simulation_time) = F_Cpp;
 F_D(1:simulation_time) = F_Dpp;
 
-T_zad(1:simulation_time) = 36.83;
-T_zad(start:start+round((simulation_time-start)/3)) = 36.83;
-T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 36.83 - 5;
-T_zad(start+round(2*(simulation_time-start)/3):simulation_time) = 36.83 + 2;
+T_zad(1:simulation_time) = T_pp;
+T_zad(start:start+round((simulation_time-start)/3)) = T_pp;
+T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = T_pp - 5;
+T_zad(start+round(2*(simulation_time-start)/3):simulation_time) = T_pp + 2;
 
-h_zad(1:simulation_time) = 12.96;
-h_zad(start:start+round((simulation_time-start)/3)) = 12.96;
-h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = 12.96 + 4;
-h_zad(start+round(2*(simulation_time-start)/3):simulation_time) = 12.96 - 1;
+h_zad(1:simulation_time) = h_pp;
+h_zad(start:start+round((simulation_time-start)/3)) = h_pp;
+h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = h_pp + 4;
+h_zad(start+round(2*(simulation_time-start)/3):simulation_time) = h_pp - 1;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 F(1:simulation_time) = alpha * sqrt(h_pp);
@@ -133,7 +133,7 @@ for k=start:simulation_time
     end
     e = e + (T_zad(k)-T_out(k))^2 + (h_zad(k)-h(k))^2; 
 end
-
+disp(e)
 
 figure(2)
 subplot(2,1,1)
