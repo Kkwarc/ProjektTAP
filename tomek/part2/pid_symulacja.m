@@ -74,7 +74,7 @@ r2_y2 = Kp_2*Kd_2/T_p;
 
 for k = k_min:k_max
  %% bez odsprzęgania
- %  [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
+  [F_C, V, VT, T, F, h, T_out] = obiekt(F_Cin, F_H, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
  %%
     e1(k) = T_zad(k) - T_out(k-1);
     F_Cin(k) = F_Cin(k-1) + r0_y1*e1(k) + r1_y1*e1(k-1) + r2_y1*e1(k-2);
@@ -91,7 +91,7 @@ for k = k_min:k_max
     e = e + abs(e1(k))^2 + abs(e2(k))^2;
 
    
-     %% z odsprzęganiem
+    % odsprzęganie - nie zakomentowywać - tylko równania obiektu
     u1(k) = F_Cin(k-1) - 0.2*(F_H(k-1) - F_Hpp);
     u2(k) = F_H(k-1) - 0.3*(F_Cin(k-1) - F_Cpp);
 
@@ -101,7 +101,8 @@ for k = k_min:k_max
     if u2(k) < 0
         u2(k) = 0;
     end
-    [F_C, V, VT, T, F, h, T_out] = obiekt(u1, u2, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
+    %% z odsprzęganiem
+    % [F_C, V, VT, T, F, h, T_out] = obiekt(u1, u2, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
     
 end
 disp(e)
@@ -128,4 +129,5 @@ legend("sterowanie Fcin", "sterowanie Fh")
 xlabel("chwila k")
 ylabel("wartość sterowania")
 title("Sterowanie")
-print("PID.eps","-depsc","-r400")
+print("PID_odsprzeganie.eps","-depsc","-r400")
+savefig("PID_odsprzeganie.fig")

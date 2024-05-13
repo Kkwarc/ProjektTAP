@@ -14,3 +14,4 @@ legend("s11", "s12", "s21", "s22")
 title("Odpowiedzi skokowe")
 hold off
 print("odp_skokowe.eps","-depsc","-r400")
+savefig("odp_skokowe.fig")
