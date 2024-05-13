@@ -13,7 +13,7 @@ start = D+1;
 simulation_time = 10000; % Czas symulacji (sekundy)
 poczatek = start; %chwila k w której zmienia sie wartość zadana
 N = 35;
-Nu = 20;
+Nu = 10;
 lambda = [200, 20];
 phi = [1, 10];
 

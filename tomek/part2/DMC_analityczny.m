@@ -9,10 +9,10 @@ D = 100;
 start = D+1;
 simulation_time = 10000; % Czas symulacji (sekundy)
 poczatek = start; %chwila k w której zmienia sie wartość zadana
-N = 35;
-Nu = 20;
+N = 10;
+Nu = 5;
 lambda = [200, 20];
-phi = [1, 10];
+phi = [5, 10];
 
 % Stałe
 C = 0.6;
