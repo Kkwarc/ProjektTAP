@@ -6,6 +6,9 @@ close all
 Tp = 10;% Krok symulacji (sekundy)
 D = 100;
 
+minimal_level = 0.95;
+maximal_level = 1.05;
+
 start = D+1;
 simulation_time = 10000; % Czas symulacji (sekundy)
 poczatek = start; %chwila k w której zmienia sie wartość zadana
@@ -45,13 +48,13 @@ F_D(1:simulation_time) = F_Dpp;
 
 T_zad(1:simulation_time) = T_pp;
 T_zad(start:start+round((simulation_time-start)/3)) = T_pp;
-T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = T_pp - 5;
-T_zad(start+round(2*(simulation_time-start)/3):simulation_time) = T_pp + 2;
+T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = T_pp * minimal_level;
+T_zad(start+round(2*(simulation_time-start)/3):simulation_time) = T_pp * maximal_level;
 
 h_zad(1:simulation_time) = h_pp;
 h_zad(start:start+round((simulation_time-start)/3)) = h_pp;
-h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = h_pp + 4;
-h_zad(start+round(2*(simulation_time-start)/3):simulation_time) = h_pp - 1;
+h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = h_pp * minimal_level;
+h_zad(start+round(2*(simulation_time-start)/3):simulation_time) = h_pp * maximal_level;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 F(1:simulation_time) = alpha * sqrt(h_pp);
@@ -67,29 +70,13 @@ e = 0;
 S = DMCstepmatrices(Tp, Tp*D);
 [ny, nu, D] = size(S);
 
-% figure(10)
-% hold on
-% plot(reshape(S(1, 1, :), 1, D))
-% plot(reshape(S(1, 2, :), 1, D))
-% plot(reshape(S(2, 1, :), 1, D))
-% plot(reshape(S(2, 2, :), 1, D))
-% % plot(reshape(S(3, 1, :), 1, D))
-% % plot(reshape(S(3, 2, :), 1, D))
-% % plot(reshape(S(4, 1, :), 1, D))
-% % plot(reshape(S(4, 2, :), 1, D))
-% legend("s11", "s11", "s21", "s22")
-% hold off
-
-minimal_level = 0.9;
-maximal_level = 1.1;
-
 Umin = zeros(Nu*nu, 1);
-Umin(1:2:end) = F_Cpp * minimal_level;
-Umin(2:2:end) = F_Hpp * minimal_level;
+Umin(1:2:end) = F_Cpp * minimal_level + 0.01;
+Umin(2:2:end) = F_Hpp * minimal_level + 0.01;
 
 Umax = zeros(Nu*nu, 1);
-Umax(1:2:end) = F_Cpp * maximal_level;
-Umax(2:2:end) = F_Hpp * maximal_level;
+Umax(1:2:end) = F_Cpp * maximal_level - 0.01;
+Umax(2:2:end) = F_Hpp * maximal_level - 0.01;
 
 lambda_mat = [lambda(1), 0; 0, lambda(2)];
 LAMBDA = kron(eye(Nu), lambda_mat);
@@ -105,6 +92,11 @@ K = (M'*PHI*M+LAMBDA)^(-1)*M'*PHI;
 
 DU_p = zeros((D-1)*nu, 1);
 options = optimoptions('quadprog','Display','off');
+J = zeros(Nu*nu, Nu*nu);
+for i = 1:Nu
+    J(i:2:end, i) = 1;
+end
+
 for k=start:simulation_time
     disp(k)
     %symulacja obiektu
@@ -128,11 +120,12 @@ for k=start:simulation_time
     Y0 =  MP * DU_p + Y;
 
     U = zeros(Nu*nu, 1);
-    U(1:2:end) = F_C(k);
-    U(2:2:end) = F_H(k);
+    U(1:2:end) = F_Cin(k-1);
+    U(2:2:end) = F_H(k-1);
 
     %Obliczenie sterowania
-    A = [-1*tril(ones(Nu*nu, Nu*nu)); 1*tril(ones(Nu*nu, Nu*nu))]; 
+    
+    A = [-1*J; J]; 
     B = [-Umin+U;
         Umax-U];
 
