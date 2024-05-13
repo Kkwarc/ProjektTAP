@@ -4,15 +4,15 @@ clear all
 close all
 
 Tp = 10;% Krok symulacji (sekundy)
-D = 100;
+D = 69;
 
 start = D+1;
 simulation_time = 10000; % Czas symulacji (sekundy)
 poczatek = start; %chwila k w której zmienia sie wartość zadana
-N = 10;
+N = 25;
 Nu = 5;
-lambda = [200, 20];
-phi = [5, 10];
+lambda = [1, 1];
+phi = [1, 1];
 
 % Stałe
 C = 0.6;
@@ -43,15 +43,23 @@ F_H(1:simulation_time) = F_Hpp;
 F_Cin(1:simulation_time) = F_Cpp;
 F_D(1:simulation_time) = F_Dpp;
 
+minimal_level = 0.9;
+maximal_level = 1.1;
+
+F_D(1:simulation_time) = F_Dpp;
+F_D(start:start+round((5/9)*(simulation_time-start))) = F_Dpp;
+F_D(round((5/9)*(simulation_time-start)):round((8/9)*(simulation_time-start))) = F_Dpp * minimal_level;
+F_D(round((8/9)*(simulation_time-start)):simulation_time) = F_Dpp * maximal_level;
+
 T_zad(1:simulation_time) = T_pp;
-T_zad(start:start+round((simulation_time-start)/3)) = T_pp;
-T_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = T_pp - 5;
-T_zad(start+round(2*(simulation_time-start)/3):simulation_time) = T_pp + 2;
+T_zad(start:start+round((3/9)*(simulation_time-start))) = T_pp;
+T_zad(round((3/9)*(simulation_time-start)):round((6/9)*(simulation_time-start))) = T_pp * minimal_level;
+T_zad(round((6/9)*(simulation_time-start)):simulation_time) = T_pp * maximal_level;
 
 h_zad(1:simulation_time) = h_pp;
-h_zad(start:start+round((simulation_time-start)/3)) = h_pp;
-h_zad(round(start+(simulation_time-start)/3):start+round(2*(simulation_time-start)/3)) = h_pp + 4;
-h_zad(start+round(2*(simulation_time-start)/3):simulation_time) = h_pp - 1;
+h_zad(start:round((4/9)*(simulation_time-start))) = h_pp;
+h_zad(round((4/9)*(simulation_time-start)):round((7/9)*(simulation_time-start))) = h_pp * minimal_level;
+h_zad(round((7/9)*(simulation_time-start)):simulation_time) = h_pp * maximal_level;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 F(1:simulation_time) = alpha * sqrt(h_pp);
@@ -67,19 +75,6 @@ e = 0;
 S = DMCstepmatrices(Tp, Tp*D);
 [ny, nu, D] = size(S);
 
-% figure(10)
-% hold on
-% plot(reshape(S(1, 1, :), 1, D))
-% plot(reshape(S(1, 2, :), 1, D))
-% plot(reshape(S(2, 1, :), 1, D))
-% plot(reshape(S(2, 2, :), 1, D))
-% % plot(reshape(S(3, 1, :), 1, D))
-% % plot(reshape(S(3, 2, :), 1, D))
-% % plot(reshape(S(4, 1, :), 1, D))
-% % plot(reshape(S(4, 2, :), 1, D))
-% legend("s11", "s11", "s21", "s22")
-% hold off
-
 lambda_mat = [lambda(1), 0; 0, lambda(2)];
 LAMBDA = kron(eye(Nu), lambda_mat);
 
@@ -87,8 +82,6 @@ phi_mat = [phi(1), 0; 0, phi(2)];
 PHI = kron(eye(N), phi_mat);
 
 [M, MP] = DMCmatrices(S, N, Nu);
-% Sz = DMCstepmatricesZ(Tp, timefinal);
-% MzP = DMCmatrixMzP(Sz, N);
 
 K = (M'*PHI*M+LAMBDA)^(-1)*M'*PHI;
 
@@ -100,23 +93,23 @@ for k=start:simulation_time
 
     %Obliczenie DU_p
     for d=1:(D-1)
-        DU_p(2*d-1) = F_Cin(k-d) - F_Cin(k-d-1);
-        DU_p(2*d) = F_H(k-d) - F_H(k-d-1);
+        DU_p(2*d-1) = F_H(k-d) - F_H(k-d-1);
+        DU_p(2*d) = F_Cin(k-d) - F_Cin(k-d-1);
     end
 
     %Pomiar wyjścia
     Y = ones(N*ny, 1);
-    Y(1:2:end) = Y(1:2:end) * T_out(k);
-    Y(2:2:end) = Y(2:2:end) * h(k);
+    Y(1:2:end) = Y(1:2:end) * h(k);
+    Y(2:2:end) = Y(2:2:end) * T_out(k);
 
     Y_zad = ones(N*ny, 1);
-    Y_zad(1:2:end) = Y_zad(1:2:end) * T_zad(k);
-    Y_zad(2:2:end) = Y_zad(2:2:end) * h_zad(k);
+    Y_zad(1:2:end) = Y_zad(1:2:end) * h_zad(k);
+    Y_zad(2:2:end) = Y_zad(2:2:end) * T_zad(k);
 
     %Obliczenie sterowania
     DU = K*(Y_zad-Y-MP*DU_p);
 
-    F_Cin(k) = F_Cin(k-1) + DU(1);
+    F_Cin(k) = F_Cin(k-1) + DU(2);
 
     if F_Cin(k) > F_Cpp*1.4
         F_Cin(k) = F_Cpp*1.4;
@@ -124,7 +117,7 @@ for k=start:simulation_time
         F_Cin(k) = F_Cpp*0.6;
     end
 
-    F_H(k) = F_H(k-1) + DU(2);
+    F_H(k) = F_H(k-1) + DU(1);
     
     if F_H(k) > F_Hpp*1.4
         F_H(k) = F_Hpp*1.4;
@@ -138,22 +131,23 @@ disp(e)
 figure(2)
 subplot(2,1,1)
 hold on
-stairs(h(1:end))
-plot(h_zad(1:end))
-stairs(T_out(1:end))
-plot(T_zad(1:end))
+stairs(h(start:end))
+plot(h_zad(start:end))
+stairs(T_out(start:end))
+plot(T_zad(start:end))
+plot(F_D(start:end))
 title("Wyjście")
-legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana")
+legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana", "zak")
 xlabel("chwila k")
 ylabel("wartość wyjścia")
 hold off
 
 subplot(2,1,2)
 hold on
-stairs(F_Cin(1:end))
-stairs(F_H(1:end))
+stairs(F_Cin(start:end))
+stairs(F_H(start:end))
 legend("sterowanie Fcin", "sterowanie Fh")
 xlabel("chwila k")
 ylabel("wartość sterowania")
 title("Sterowanie")
-print("DMC_single.eps","-depsc","-r400")
+print("DMC_analityczny.eps","-depsc","-r400")

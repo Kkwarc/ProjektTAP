@@ -33,21 +33,23 @@ F_D(1:k_max) = F_Dpp;
 u1 = F_Cin;
 u2 = F_H;
 
-% T_zad(1:k_max) = 36.83;
-% T_zad(round(k_max/3):k_max) = 36.83 - 2;
-% T_zad(round(2*k_max/3):k_max) = 36.83 + 2;
-% 
-% h_zad(1:k_max) = 12.96;
-% h_zad(round(k_max/3):k_max) = 12.96 + 1;
-% h_zad(round(2*k_max/3):k_max) = 12.96 - 1;
+minimal_level = 0.9;
+maximal_level = 1.1;
+
+F_D(1:k_max) = F_Dpp;
+F_D(k_min:k_min+round((5/9)*(k_max-k_min))) = F_Dpp;
+F_D(round((5/9)*(k_max-k_min)):round((8/9)*(k_max-k_min))) = F_Dpp * minimal_level;
+F_D(round((8/9)*(k_max-k_min)):k_max) = F_Dpp * maximal_level;
 
 T_zad(1:k_max) = T_pp;
-T_zad(round(k_max/3):k_max) = T_pp - 5;
-T_zad(round(2*k_max/3):k_max) = T_pp + 2;
+T_zad(k_min:k_min+round((3/9)*(k_max-k_min))) = T_pp;
+T_zad(round((3/9)*(k_max-k_min)):round((6/9)*(k_max-k_min))) = T_pp * minimal_level;
+T_zad(round((6/9)*(k_max-k_min)):k_max) = T_pp * maximal_level;
 
 h_zad(1:k_max) = h_pp;
-h_zad(round(k_max/3):k_max) = h_pp + 4;
-h_zad(round(2*k_max/3):k_max) = h_pp - 1;
+h_zad(k_min:round((4/9)*(k_max-k_min))) = h_pp;
+h_zad(round((4/9)*(k_max-k_min)):round((7/9)*(k_max-k_min))) = h_pp * minimal_level;
+h_zad(round((7/9)*(k_max-k_min)):k_max) = h_pp * maximal_level;
 
 % Stan i wyjścia procesu przed rozpoczęciem symulacji
 F(1:k_max) = alpha * sqrt(h_pp);
@@ -107,22 +109,23 @@ disp(e)
 figure(1)
 subplot(2,1,1)
 hold on
-stairs(h(1:end))
-plot(h_zad(1:end))
-stairs(T_out(1:end))
-plot(T_zad(1:end))
+stairs(h(k_min:end))
+plot(h_zad(k_min:end))
+stairs(T_out(k_min:end))
+plot(T_zad(k_min:end))
+plot(F_D(k_min:end))
 title("Wyjście")
-legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana")
+legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana", "zak")
 xlabel("chwila k")
 ylabel("wartość wyjścia")
 hold off
 
 subplot(2,1,2)
 hold on
-stairs(F_Cin(1:end))
-stairs(F_H(1:end))
+stairs(F_Cin(k_min:end))
+stairs(F_H(k_min:end))
 legend("sterowanie Fcin", "sterowanie Fh")
 xlabel("chwila k")
 ylabel("wartość sterowania")
 title("Sterowanie")
-print("DMC_single.eps","-depsc","-r400")
+print("PID.eps","-depsc","-r400")
