@@ -76,12 +76,12 @@ S = DMCstepmatrices(Tp, Tp*D);
 [ny, nu, D] = size(S);
 
 Umin = zeros(Nu*nu, 1);
-Umin(1:2:end) = F_Hpp * (minimal_level-0.3);
-Umin(2:2:end) = F_Cpp * (minimal_level-0.3);
+Umin(1:2:end) = 0;
+Umin(2:2:end) = 0;
 
 Umax = zeros(Nu*nu, 1);
-Umax(1:2:end) = F_Hpp* maximal_level*4;
-Umax(2:2:end) = F_Cpp * maximal_level*4;
+Umax(1:2:end) = F_Hpp * 2;
+Umax(2:2:end) = F_Cpp * 2;
 
 lambda_mat = [lambda(1), 0; 0, lambda(2)];
 LAMBDA = kron(eye(Nu), lambda_mat);

@@ -111,18 +111,18 @@ for k=start:simulation_time
 
     F_Cin(k) = F_Cin(k-1) + DU(2);
 
-    if F_Cin(k) > F_Cpp*1.4
-        F_Cin(k) = F_Cpp*1.4;
-    elseif F_Cin(k) < F_Cpp*0.6
-        F_Cin(k) = F_Cpp*0.6;
+    if F_Cin(k) > F_Cpp*2
+        F_Cin(k) = F_Cpp*2;
+    elseif F_Cin(k) < 0
+        F_Cin(k) = 0;
     end
 
     F_H(k) = F_H(k-1) + DU(1);
     
-    if F_H(k) > F_Hpp*1.4
-        F_H(k) = F_Hpp*1.4;
-    elseif F_H(k) < F_Hpp*0.6
-        F_H(k) = F_Hpp*0.6;
+    if F_H(k) > F_Hpp*2
+        F_H(k) = F_Hpp*2;
+    elseif F_H(k) < 0
+        F_H(k) = 0;
     end
     e = e + (T_zad(k)-T_out(k))^2 + (h_zad(k)-h(k))^2; 
 end
