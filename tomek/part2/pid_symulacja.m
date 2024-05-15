@@ -4,7 +4,6 @@ close all;
 
 % vector = [-1.25, -0.005, -0.04, 1.25, 0.005, 0.004];
 vector = [-1.05, 200, 0.01, 1.05, 100, 0.01];
-%vector = [-1.05, 200, 0.01, 1.05, 100, 0.01];
 Kp_1=vector(1); % człon proporcjonalny
 Ki_1=vector(2); % człon całkujący
 Kd_1=vector(3);
@@ -90,9 +89,11 @@ for k = k_min:k_max
 
     e = e + abs(e1(k))^2 + abs(e2(k))^2;
 
-   
+    %% z odsprzęganiem
     % odsprzęganie - nie zakomentowywać - tylko równania obiektu
-    u1(k) = F_Cin(k-1) - 0.2*(F_H(k-1) - F_Hpp);
+%     [F_C, V, VT, T, F, h, T_out] = obiekt(u1, u2, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
+    
+    u1(k) = F_Cin(k-1) + 0.2*(F_H(k-1) - F_Hpp);
     u2(k) = F_H(k-1) - 0.3*(F_Cin(k-1) - F_Cpp);
 
     if u1(k) < 0
@@ -101,33 +102,29 @@ for k = k_min:k_max
     if u2(k) < 0
         u2(k) = 0;
     end
-    %% z odsprzęganiem
-    % [F_C, V, VT, T, F, h, T_out] = obiekt(u1, u2, F_D, F_C, T_H, T_C, T_D, T_out, h, C, alpha, tau_C_steps, tau_steps, V, VT, T, F, T_p, k);
-    
 end
 disp(e)
 
-figure(1)
-subplot(2,1,1)
+figure('Renderer', 'painters', 'Position', [130 100 1100 400])
 hold on
-stairs(h(k_min:end))
-plot(h_zad(k_min:end))
-stairs(T_out(k_min:end))
-plot(T_zad(k_min:end))
-plot(F_D(k_min:end))
-title("Wyjście")
-legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana", "zak")
-xlabel("chwila k")
-ylabel("wartość wyjścia")
+stairs(h(round((3/9)*(k_max-k_min))-300:end), LineWidth=1)
+plot(h_zad(round((3/9)*(k_max-k_min))-300:end), LineWidth=1)
+stairs(T_out(round((3/9)*(k_max-k_min))-300:end), LineWidth=1)
+plot(T_zad(round((3/9)*(k_max-k_min))-300:end), LineWidth=1)
+plot(F_D(round((3/9)*(k_max-k_min))-300:end), LineWidth=1)
+xlim([1 10000-round((3/9)*(k_max-k_min))+300])
+legend("h_{out}", "h_{zad}", "T_{out}", "t_{zad}", "zakłócenia", Location="east")
+xlabel("k")
+ylabel("h_{out}(k), T_{out}(k)")
 hold off
 
-subplot(2,1,2)
+figure('Renderer', 'painters', 'Position', [130 100 1100 400])
 hold on
-stairs(F_Cin(k_min:end))
-stairs(F_H(k_min:end))
-legend("sterowanie Fcin", "sterowanie Fh")
-xlabel("chwila k")
-ylabel("wartość sterowania")
-title("Sterowanie")
-print("PID_odsprzeganie.eps","-depsc","-r400")
-savefig("PID_odsprzeganie.fig")
+stairs(F_Cin(round((3/9)*(k_max-k_min))-300:end), LineWidth=1)
+stairs(F_H(round((3/9)*(k_max-k_min))-300:end), LineWidth=1)
+xlim([1 10000-round((3/9)*(k_max-k_min))+300])
+legend("F_{Cin}", "F_h")
+xlabel("k")
+ylabel("F_{H}(k), F_{Cin}(k)")
+% print("PID_odsprzeganie.eps","-depsc","-r400")
+% savefig("PID_odsprzeganie.fig")

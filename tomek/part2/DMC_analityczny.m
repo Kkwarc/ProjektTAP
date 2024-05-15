@@ -52,7 +52,7 @@ F_D(round((5/9)*(simulation_time-start)):round((8/9)*(simulation_time-start))) =
 F_D(round((8/9)*(simulation_time-start)):simulation_time) = F_Dpp * maximal_level;
 
 T_zad(1:simulation_time) = T_pp;
-T_zad(start:start+round((3/9)*(simulation_time-start))) = T_pp;
+T_zad(start:round((3/9)*(simulation_time-start))) = T_pp;
 T_zad(round((3/9)*(simulation_time-start)):round((6/9)*(simulation_time-start))) = T_pp * minimal_level;
 T_zad(round((6/9)*(simulation_time-start)):simulation_time) = T_pp * maximal_level;
 
@@ -128,27 +128,26 @@ for k=start:simulation_time
 end
 disp(e)
 
-figure(2)
-subplot(2,1,1)
+figure('Renderer', 'painters', 'Position', [130 100 1100 400])
 hold on
-stairs(h(start:end))
-plot(h_zad(start:end))
-stairs(T_out(start:end))
-plot(T_zad(start:end))
-plot(F_D(start:end))
-title("Wyjście")
-legend("Wyjście h", "h zadana", "Wyjscie Tout", "t zadana", "zak")
-xlabel("chwila k")
-ylabel("wartość wyjścia")
+stairs(h(round((3/9)*(simulation_time-start))-300:end), LineWidth=1)
+plot(h_zad(round((3/9)*(simulation_time-start))-300:end), LineWidth=1)
+stairs(T_out(round((3/9)*(simulation_time-start))-300:end), LineWidth=1)
+plot(T_zad(round((3/9)*(simulation_time-start))-300:end), LineWidth=1)
+plot(F_D(round((3/9)*(simulation_time-start))-300:end), LineWidth=1)
+xlim([1 10000-round((3/9)*(simulation_time-start))-300])
+legend("h_{out}", "h_{zad}", "T_{out}", "t_{zad}", "zakłócenia", Location="east")
+xlabel("k")
+ylabel("h_{out}(k), T_{out}(k)")
 hold off
 
-subplot(2,1,2)
+figure('Renderer', 'painters', 'Position', [130 100 1100 400])
 hold on
-stairs(F_Cin(start:end))
-stairs(F_H(start:end))
-legend("sterowanie Fcin", "sterowanie Fh")
-xlabel("chwila k")
-ylabel("wartość sterowania")
-title("Sterowanie")
-print("DMC_analityczny.eps","-depsc","-r400")
-savefig("DMC_analityczny.fig")
+stairs(F_Cin(round((3/9)*(simulation_time-start))-300:end), LineWidth=1)
+stairs(F_H(round((3/9)*(simulation_time-start))-300:end), LineWidth=1)
+xlim([1 10000-round((3/9)*(simulation_time-start))+300])
+legend("F_{Cin}", "F_h")
+xlabel("k")
+ylabel("F_{H}(k), F_{Cin}(k)")
+% print("DMC_analityczny.eps","-depsc","-r400")
+% savefig("DMC_analityczny.fig")
